@@ -1,0 +1,98 @@
+---
+title: "Estudio pokemon"
+author: "Cristian Sáez Mardones"
+date: "26-09-2020"
+output: html_document
+---
+
+# Pokemon
+
+```{r}
+data = read.csv("./Pokemon.csv")
+head(data, 3)
+```
+
+## Pokemones por generación
+
+```{r}
+table(data$Generation)
+```
+
+## Porcentaje de pokemones por generación
+
+```{r}
+prop.table(table(data$Generation)) * 100
+```
+
+## Histograma de velocidades
+
+```{r}
+hist(data$Speed, col="chocolate1", main="Histograma de velocidades",
+     xlab="Velocidad", ylab="Frecuencia")
+```
+
+## Velocidades máxima y minima
+
+```{r}
+max(data$Speed)
+min(data$Speed)
+```
+
+## Cantidad de pokemones por tipo principal
+
+```{r}
+table(data$Type.1)
+```
+
+## Velocidad, defensa y ataque promedios de los tipo agua
+
+```{r}
+df = data[data$Type.1 == "Water", c("Attack", "Defense", "Speed")]
+head(df)
+
+promedio <- function(col) {
+  round(sum(col) / length(col), 1)
+}
+
+apply(df, MARGIN=2, FUN=promedio)
+```
+
+## Porcentaje de legendarios
+
+```{r}
+legendarios <- data[data$Legendary=="True", ]
+nrow(legendarios)
+percentage <- nrow(legendarios) / nrow(data)
+percentage * 100
+
+bars.colors <- c("gray30", "mediumpurple1", "yellow", "violetred2",
+                 "tomato1", "slategray2", "orchid1", "springgreen2",
+                 "tan", "turquoise1", "peachpuff", "magenta1",
+                 "darkgoldenrod3", "darkgray", "cornflowerblue")
+
+barplot(table(legendarios$Type.1), las=2,
+        col=bars.colors)
+```
+
+## Legendarios ordenados por stats totales
+
+```{r}
+legendarios[order(legendarios$Total, decreasing=TRUE), ][c("Name", "Total")]
+```
+
+***
+
+### Distribución de los pokemon tipo agua con su segundo stat
+
+```{r}
+water.type <- data[data$Type.1=="Water", ]
+nrow(water.type)
+
+ftable(water.type$Type.1, water.type$Type.2)
+```
+
+
+
+
+
+
