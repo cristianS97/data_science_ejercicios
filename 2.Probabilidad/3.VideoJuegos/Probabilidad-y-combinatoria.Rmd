@@ -1,0 +1,118 @@
+---
+title: "Probabilidad y combinatoria"
+author: "Cristian Sáez Mardones"
+date: "13-01-2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Probabilidad y combinatoria
+
+```{r}
+df = read.csv('vgsales.csv')
+head(df)
+str(df)
+```
+
+Dimensiones del data frame
+
+```{r}
+dim(df)
+```
+
+# Combinatoria de los géneros
+
+* ¿Cuántos estilos combinados puedo hacer?
+
+```{r}
+omega_generos = as.factor(df$Genre)
+n = length(levels(omega_generos))
+k = 2
+
+total = factorial(n) / (factorial(k) * factorial(n-k))
+
+
+library(gtools)
+nrow(combinations(n, k, 1:n))
+```
+
+Puedo combinar los `r n` estilos de videojuegos en grupos de `r k` elementos de `r total` formas distintas
+
+## Preguntas
+
+* ¿Cuál fue el año de mas ventas?
+
+```{r}
+year = names(which(table(df$Year) == max(table(df$Year))))
+```
+
+El año de mas ventas fue `r year`
+
+* Si escogo un juego al azar, ¿Qué tan probable es que sea de entre 1980 y 1990?
+
+```{r}
+prob = nrow(df[df$Year >= 1980 & df$Year <= 1990, ]) / dim(df)[1]
+prob = round(prob * 100, 2)
+```
+
+La probabilidad es de un `r prob`%
+
+* Si escogo un juego al azar, ¿Qué tan probable es que sea posterior al año 1990?
+
+```{r}
+prob = nrow(df[df$Year > 1990, ]) / dim(df)[1]
+prob = round(prob * 100, 2)
+```
+
+La probabilidad es de un `r prob`%
+
+```{r}
+levels(omega_generos)
+```
+
+* ¿Qué tan probable es escoger un shooter?
+
+```{r}
+prob = nrow(df[df$Genre=='Shooter', ]) / dim(df)[1]
+prob = round(prob * 100, 2)
+```
+
+La probabilidad es de un `r prob`%
+
+* Si se retira un juego, y se sabe que es del tipo **Adventure**, ¿Cuál es la probabilidad de que su año de lanzamiento sea el **2010**?
+
+$$A:\ \text{Juego del tipo Adventure}$$
+
+$$B:\ \text{Lanzamiento en el año 2010}$$
+
+$$P(B\ |\ A)\ =\ \frac{P(A\ \cap\ B)}{P(A)}$$
+
+```{r}
+prob = nrow(df[df$Genre=='Adventure' & df$Year==2010, ]) / nrow(df[df$Genre=='Adventure', ])
+
+prob = round(prob * 100, 2)
+```
+
+La probabilidad es de un `r prob`%
+
+* ¿Quién ha publicado mas juegos? y ¿Qué tan probable es sacarlo?
+
+```{r}
+tabla = table(df$Publisher)
+publicador = names(which(tabla == max(tabla)))
+
+prob = nrow(df[df$Publisher==publicador, ]) / dim(df)[1]
+prob = round(prob*100, 2)
+```
+
+Quién mas juegos a publicado es `r publicador` y obtenerlo al azar tiene un `r prob`% de probabilidad
+
+
+
+
+
+
+
