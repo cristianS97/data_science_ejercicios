@@ -1,0 +1,93 @@
+---
+title: "regresion"
+author: "Cristian Sáez Mardones"
+date: "18-01-2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Regresión lineal costos medicos
+
+***
+
+[Data set original](https://www.kaggle.com/mirichoi0218/insurance)
+
+Columns
+
+* age: age of primary beneficiary
+
+* sex: insurance contractor gender, female, male
+
+* bmi: Body mass index, providing an understanding of body, weights that are relatively high or low relative to height,
+objective index of body weight (kg / m ^ 2) using the ratio of height to weight, ideally 18.5 to 24.9
+
+* children: Number of children covered by health insurance / Number of dependents
+
+* smoker: Smoking
+
+* region: the beneficiary's residential area in the US, northeast, southeast, southwest, northwest.
+
+* charges: Individual medical costs billed by health insurance
+
+***
+
+* Diremos que el modelo es aceptable si explica sobre un 85% de los datos
+
+* Diremos que el modelo es bueno si explica sobre un 90% de los datos
+
+Cargamos los datos
+
+```{r}
+df = read.csv('insurance.csv')
+head(df)
+dim(df)
+
+train <- df[c(1:1150), ]
+test <- df[c(1151:dim(df)[1]), ]
+```
+
+Gráfica de la predicción de edad vs precio
+
+```{r}
+plot(train$age, train$charges, col='dodgerblue')
+abline(lm(charges~age, data=train), col="orangered")
+summary(lm(charges~age, data=train))$r.squared
+```
+
+Agregamos el bmi
+
+```{r}
+plot(train$age, train$charges, col='dodgerblue')
+abline(lm(charges~age+bmi, data=train), col="orangered")
+summary(lm(charges~age+bmi, data=train))$r.squared
+```
+
+Buscamos el mejor modelo
+
+```{r}
+summary(lm(charges~age+bmi+region, data=train))$r.squared
+summary(lm(charges~age+bmi+region+smoker, data=train))$r.squared
+summary(lm(charges~age+bmi+region+smoker+sex, data=train))$r.squared
+summary(lm(charges~age+bmi+region+smoker+sex+children, data=train))$r.squared
+```
+
+Nos quedamos con el modelo que incluye todas las variables
+
+```{r}
+model <- lm(charges~age+bmi+region+smoker+sex+children, data=train)
+prediction_y <- predict(model, test)
+correlacion <- cor(test$charges, prediction_y)
+```
+
+El modelo explica los datos en un `r round(correlacion*100, 2)`% los datos, con lo que podemos afirmar que nuestro modelo es aceptable.
+
+
+
+
+
+
+
+
