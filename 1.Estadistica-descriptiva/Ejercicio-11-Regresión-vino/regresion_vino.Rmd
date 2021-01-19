@@ -1,0 +1,121 @@
+---
+title: "Vino"
+author: "Cristian Sáez Mardones"
+date: "18-01-2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Regresión lineal vino
+
+[Dataset](https://www.kaggle.com/uciml/red-wine-quality-cortez-et-al-2009)
+
+***
+
+* Diremos que el modelo es aceptable si explica sobre un 85% de los datos
+
+* Diremos que el modelo es bueno si explica sobre un 90% de los datos
+
+Cargamos los datos
+
+***
+
+```{r}
+wine = read.csv('winequality-red.csv')
+head(wine)
+dim(wine)
+```
+
+Creamos los datasets para train y test
+
+```{r}
+train <- wine[c(1:1200), ]
+test <- wine[c(1201:dim(wine)[1]),]
+dim(train)[1] + dim(test)[1] == dim(wine)[1]
+```
+
+Nombre de las columnas
+
+```{r}
+colnames(wine)
+```
+
+Creamos un modelo de regresión para predecir la calificación del vino een base a la cantidad de alcohol
+
+* 1 variable
+
+```{r}
+for(col in colnames(wine)[1:length(colnames(wine))-1]) {
+  model1 <- lm(paste('quality~',col), data=train)
+  print(paste('quality ~',col, ': ', round(summary(model1)$r.squared, 4)))
+}
+```
+
+* 2 variables
+
+```{r}
+for(col in colnames(wine)[1:length(colnames(wine))-1]) {
+  if(col != 'alcohol') {
+    model1 <- lm(paste('quality~alcohol','+',col), data=train)
+    print(paste('quality ~ alcohol +', col, ': ', round(summary(model1)$r.squared, 4)))
+  }
+}
+```
+
+* 3 variables
+
+```{r}
+for(col in colnames(wine)[1:length(colnames(wine))-1]) {
+  if(col != 'alcohol' && col != 'sulphates') {
+    model1 <- lm(paste('quality~alcohol+sulphates+',col), data=train)
+    print(paste('quality ~ alcohol + sulphates +', col, ': ', round(summary(model1)$r.squared, 4)))
+  }
+}
+```
+
+* 4 variables
+
+```{r}
+for(col in colnames(wine)[1:length(colnames(wine))-1]) {
+  if(col != 'alcohol' && col != 'sulphates' && col != 'volatile.acidity') {
+    model1 <- lm(paste('quality~alcohol+sulphates+volatile.acidity+',col), data=train)
+    print(paste('quality ~ alcohol + sulphates + volatile.acidity +', col, ': ', round(summary(model1)$r.squared, 4)))
+  }
+}
+```
+
+Modelo con todas las variables
+
+```{r}
+x <- paste(colnames(wine)[1:length(colnames(wine))-1], collapse='+')
+my_formula = paste('quality~', x)
+model <- lm(my_formula, data=train)
+summary(model)$r.squared
+```
+
+Comprobamos que tan bueno es el modelo
+
+```{r}
+prediction_y <- predict(model, test)
+correlacion <- cor(test$quality, prediction_y)
+```
+
+El modelo explica los datos en un `r round(correlacion*100, 2)`% los datos, con lo que diremos que nuestro modelo no es aceptable bajo las condiciones dadas.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
